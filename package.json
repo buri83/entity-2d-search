@@ -1,14 +1,19 @@
 {
   "name": "entity-2d-search",
-  "version": "0.1.0",
-  "description": "",
+  "version": "0.0.1",
+  "description": "You can search entities in 2D with react angle range queries quickly.",
   "main": "./dist/index.js",
   "scripts": {
     "test": "npx jest",
     "build": "npx tsc"
   },
-  "author": "",
-  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/buri83/entity-2d-search"
+  },
+  "author": "buri",
+  "homepage": "https://github.com/buri83/entity-2d-search/blob/main/README.md",
+  "license": "MIT",
   "dependencies": {
     "rxjs": "^7.8.1"
   },
