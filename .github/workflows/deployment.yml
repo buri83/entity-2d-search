@@ -1,11 +1,6 @@
 name: Publish to npm
 
 on:
-  workflow_call:
-    secrets:
-      NPM_ACCESS_TOKEN:
-        required: true
-  
   push:
     branches: [ "main" ]
   
@@ -17,6 +12,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - run: echo $NODE_AUTH_TOKEN
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_ACCESS_TOKEN }}
+
       - uses: actions/checkout@v3
       
       - name: Use Node.js 20.x
