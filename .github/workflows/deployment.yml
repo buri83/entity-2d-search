@@ -1,8 +1,13 @@
 name: Publish to npm
 
 on:
+  workflow_call:
+    NPM_ACCESS_TOKEN:
+      required: false
+  
   push:
     branches: [ "main" ]
+  
   pull_request:
     branches: [ "main" ]
 
@@ -23,6 +28,6 @@ jobs:
       - run: ls ./dist/
 
       # When tag created
-      - run: npm publish --access public --dry-run
+      - run: npm publish --dry-run
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_ACCESS_TOKEN }}
