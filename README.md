@@ -2,6 +2,14 @@
 
 Sorry ! This package is WIP. I published for testing.
 
+## Install
+
+```bash
+$ npm i search2d
+```
+
+## Usage
+
 ```typescript
 import { EntityPosition, EntitySearch, SearchQuery, SearchableEntity } from "search2d";
 
@@ -30,13 +38,13 @@ const query: SearchQuery = {
 }
 
 
-// "001" entity is not found because it is outside the query location
+// "001" entity is not found because it is outside the query position
 search.register([entity1, entity2]);
 console.log(search.search(query));
 /*
     { 
         entities: [ 
-            { id: '002', location: [EntityLocation], age: 18 } 
+            { id: '002', position: [EntityPosition], age: 18 } 
         ] 
     }
 */
@@ -50,12 +58,19 @@ console.log(search.search(query));
         entities: [
             ExampleEntityClass {
                 id: '001',
-                location: [EntityLocation],
+                position: [EntityPosition],
                 name: 'entity-1'
             },
-            { id: '002', location: [EntityLocation], age: 18 }
+            { id: '002', position: [EntityPosition], age: 18 }
         ]
     }
 */
 
+
+// Delete registered entities
+search.delete([entity1, entity2]);
+console.log(search.search(query));
+/*
+    { entities: [] }
+*/
 ```
