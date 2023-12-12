@@ -29,13 +29,13 @@ describe(Map1dSearch.name, () => {
 
     describe("Searching", () => {
         const query: SearchQuery = {
-            location: {
+            position: {
                 xFrom: 10, xTo: 20,
                 yFrom: 10, yTo: 20,
             }
         }
         describe.each`
-            locations                               | resultCount
+            positions                               | resultCount
             ${[{ x: 9, y: 9 }]}                     | ${0}
             ${[{ x: 10, y: 10 }]}                   | ${1}
             ${[{ x: 10, y: 15 }]}                   | ${1}
@@ -44,10 +44,10 @@ describe(Map1dSearch.name, () => {
             ${[{ x: 9, y: 9 }, { x: 21, y: 21 }]}   | ${0}
             ${[{ x: 9, y: 9 }, { x: 20, y: 20 }]}   | ${1}
             ${[{ x: 10, y: 10 }, { x: 20, y: 20 }]} | ${2}
-        `(`Registered entity at $locations`, ({ locations, resultCount }) => {
+        `(`Registered entity at $positions`, ({ positions, resultCount }) => {
             it(`requestCount = ${resultCount}`, () => {
                 const search = generateSearch();
-                const entities = locations.map((l: { x: number, y: number }) => generateRandomEntity(l.x, l.y));
+                const entities = positions.map((l: { x: number, y: number }) => generateRandomEntity(l.x, l.y));
 
                 for (const e of entities) {
                     search.register([e]);
@@ -61,19 +61,19 @@ describe(Map1dSearch.name, () => {
             const search = generateSearch();
             const entity1 = generateRandomEntity(9, 9);
             search.register([entity1]);
-            expect(entity1.location.get()).toEqual({ x: 9, y: 9 });
+            expect(entity1.position.get()).toEqual({ x: 9, y: 9 });
             expect(search.search(query).entities).toHaveLength(0);
 
-            entity1.location.x = 10;
-            expect(entity1.location.get()).toEqual({ x: 10, y: 9 });
+            entity1.position.x = 10;
+            expect(entity1.position.get()).toEqual({ x: 10, y: 9 });
             expect(search.search(query).entities).toHaveLength(0);
 
-            entity1.location.y = 15;
-            expect(entity1.location.get()).toEqual({ x: 10, y: 15 });
+            entity1.position.y = 15;
+            expect(entity1.position.get()).toEqual({ x: 10, y: 15 });
             expect(search.search(query).entities).toHaveLength(1);
 
-            entity1.location.set({ x: 21, y: 21 });
-            expect(entity1.location.get()).toEqual({ x: 21, y: 21 });
+            entity1.position.set({ x: 21, y: 21 });
+            expect(entity1.position.get()).toEqual({ x: 21, y: 21 });
             expect(search.search(query).entities).toHaveLength(0);
         })
     })

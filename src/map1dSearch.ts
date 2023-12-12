@@ -47,8 +47,8 @@ export class Map1dSearch<T extends SearchableEntity> implements Entity2dSearch<T
             // initialize
             this.updateEntity(entity);
 
-            // UpdateEntity on location updated
-            entity.location.subscribe(() => {
+            // UpdateEntity on position updated
+            entity.position.subscribe(() => {
                 this.updateEntity(entity);
             })
         }
@@ -73,18 +73,18 @@ export class Map1dSearch<T extends SearchableEntity> implements Entity2dSearch<T
 
         const isFulfilled = (entity: T): boolean => {
             return (
-                entity.location.x >= query.location.xFrom &&
-                entity.location.x <= query.location.xTo &&
-                entity.location.y >= query.location.yFrom &&
-                entity.location.y <= query.location.yTo
+                entity.position.x >= query.position.xFrom &&
+                entity.position.x <= query.position.xTo &&
+                entity.position.y >= query.position.yFrom &&
+                entity.position.y <= query.position.yTo
             );
         };
 
-        const yVisibleIndexFrom = this.toIndexY(query.location.yFrom);
-        const yVisibleIndexTo = this.toIndexY(query.location.yTo);
+        const yVisibleIndexFrom = this.toIndexY(query.position.yFrom);
+        const yVisibleIndexTo = this.toIndexY(query.position.yTo);
 
-        const xVisibleIndexFrom = this.toIndexX(query.location.xFrom);
-        const xVisibleIndexTo = this.toIndexX(query.location.xTo);
+        const xVisibleIndexFrom = this.toIndexX(query.position.xFrom);
+        const xVisibleIndexTo = this.toIndexX(query.position.xTo);
 
         // 絶対範囲の内側なので isFulfilled() チェックはしない
         for (let y = yVisibleIndexFrom + 1; y <= yVisibleIndexTo - 1; y++) {
@@ -131,7 +131,7 @@ export class Map1dSearch<T extends SearchableEntity> implements Entity2dSearch<T
     }
 
     private updateEntity(entity: T): void {
-        const newIndex = this.toIndexXY(this.toIndexX(entity.location.x), this.toIndexY(entity.location.y));
+        const newIndex = this.toIndexXY(this.toIndexX(entity.position.x), this.toIndexY(entity.position.y));
         const oldIndex = this.entityIndexes.get(entity.id);
         if (oldIndex) {
             this.dividedAreas[oldIndex].delete(entity.id);

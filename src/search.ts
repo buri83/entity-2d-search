@@ -1,49 +1,54 @@
-import { Subject } from "rxjs";
+import { Subscribable } from "./subscribable";
 
 export type EntityId = string;
 
-export type SearchableEntity = {
-    id: Readonly<EntityId>;
-    location: EntityLocation
+export type Position = {
+    x: number;
+    y: number;
 }
 
-export class EntityLocation {
-    constructor(private location: { x: number, y: number }) { }
+export type SearchableEntity = {
+    id: Readonly<EntityId>;
+    position: EntityPosition
+}
 
-    private subject = new Subject<EntityLocation["location"]>()
+export class EntityPosition {
+    constructor(private position: Position) { }
+
+    private subject = new Subscribable<Position>()
     subscribe(listener: Parameters<typeof this.subject.subscribe>[0]): void {
         this.subject.subscribe(listener);
     }
 
-    get(): EntityLocation["location"] {
-        return { ... this.location };
+    get(): Position {
+        return { ... this.position };
     }
 
-    set(location: EntityLocation["location"]): void {
-        this.location = { ...location };
-        this.subject.next(this.get());
+    set(position: Position): void {
+        this.position = { ...position };
+        this.subject.publish(this.get());
     }
 
     get x(): number {
-        return this.location.x;
+        return this.position.x;
     }
     set x(value: number) {
-        this.location.x = value;
-        this.subject.next(this.get());
+        this.position.x = value;
+        this.subject.publish(this.get());
     }
 
     get y(): number {
-        return this.location.y;
+        return this.position.y;
     }
     set y(value: number) {
-        this.location.y = value;
-        this.subject.next(this.get());
+        this.position.y = value;
+        this.subject.publish(this.get());
     }
 }
 
 
 export type SearchQuery = {
-    location: {
+    position: {
         xFrom: number;
         xTo: number;
         yFrom: number;

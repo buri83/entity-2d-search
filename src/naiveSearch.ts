@@ -14,8 +14,8 @@ export class NaiveSearch<T extends SearchableEntity> implements Entity2dSearch<T
     search(query: SearchQuery): SearchResult<T> {
         const entities: T[] = [];
         for (const entity of this.entities.values()) {
-            const isContained = (query.location.xFrom <= entity.location.x && entity.location.x <= query.location.xTo)
-                && (query.location.yFrom <= entity.location.y && entity.location.y <= query.location.yTo);
+            const isContained = (query.position.xFrom <= entity.position.x && entity.position.x <= query.position.xTo)
+                && (query.position.yFrom <= entity.position.y && entity.position.y <= query.position.yTo);
             if (isContained) {
                 entities.push(entity);
             }
