@@ -1,4 +1,4 @@
-name: Node.js CI
+name: Publish to npm
 
 on:
   push:
@@ -7,13 +7,16 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  publish-to-npm:
     runs-on: ubuntu-latest
+
+    environment:
+      name: deployment
 
     steps:
       - uses: actions/checkout@v3
       
-      - name: Use Node.js
+      - name: Use Node.js 20.x
         uses: actions/setup-node@v3
       
       # Build and test
