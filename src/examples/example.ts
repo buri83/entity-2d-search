@@ -1,14 +1,22 @@
 import { EntityPosition, EntitySearch, SearchQuery, SearchableEntity } from "..";
 
-class ExampleEntity implements SearchableEntity {
+class ExampleEntityClass implements SearchableEntity {
     constructor(
-        readonly id: string,
-        readonly name: string,
-        readonly position: EntityPosition
+        readonly id: string,  // Required
+        readonly position: EntityPosition,  // Required
+        readonly name: string,  // Additional fields
     ) { }
 }
 
-const search = new EntitySearch({ height: 100, width: 100 });
+type ExampleEntityObject = {
+    age: number;  // Additional fields
+} & SearchableEntity;
+
+const search = new EntitySearch<ExampleEntityClass | ExampleEntityObject>({ height: 100, width: 100 });
+
+const entity1 = new ExampleEntityClass("001", new EntityPosition({ x: 5, y: 5 }), "entity-1");
+const entity2: ExampleEntityObject = { id: "002", position: new EntityPosition({ x: 20, y: 20 }), age: 18 };
+
 const query: SearchQuery = {
     position: {
         xFrom: 10, xTo: 20,
@@ -16,11 +24,31 @@ const query: SearchQuery = {
     }
 }
 
-const entity1 = new ExampleEntity("001", "entity-1", new EntityPosition({ x: 5, y: 5 }));
-const entity2 = new ExampleEntity("002", "entity-2", new EntityPosition({ x: 20, y: 20 }));
 
+// "001" entity is not found because it is outside the query location
 search.register([entity1, entity2]);
 console.log(search.search(query));
+/*
+    { 
+        entities: [ 
+            { id: '002', location: [EntityLocation], age: 18 } 
+        ] 
+    }
+*/
 
+
+// Moved "001" entity to inside the query location, it will be automatically applied and will be searchable.
 entity1.position.set({ x: 15, y: 15 });
 console.log(search.search(query));
+/*
+    {
+        entities: [
+            ExampleEntityClass {
+                id: '001',
+                location: [EntityLocation],
+                name: 'entity-1'
+            },
+            { id: '002', location: [EntityLocation], age: 18 }
+        ]
+    }
+*/

@@ -3,12 +3,12 @@
 Sorry ! This package is WIP. I published for testing.
 
 ```typescript
-import { EntityLocation, EntitySearch, SearchQuery, SearchableEntity } from "entity-2d-search";
+import { EntityPosition, EntitySearch, SearchQuery, SearchableEntity } from "search2d";
 
 class ExampleEntityClass implements SearchableEntity {
     constructor(
-        readonly id: string, // Required
-        readonly location: EntityLocation,  // Required
+        readonly id: string,  // Required
+        readonly position: EntityPosition,  // Required
         readonly name: string,  // Additional fields
     ) { }
 }
@@ -19,15 +19,16 @@ type ExampleEntityObject = {
 
 const search = new EntitySearch<ExampleEntityClass | ExampleEntityObject>({ height: 100, width: 100 });
 
-const entity1 = new ExampleEntityClass("001", new EntityLocation({ x: 5, y: 5 }), "entity-1");
-const entity2: ExampleEntityObject = { id: "002", location: new EntityLocation({ x: 20, y: 20 }), age: 18 };
+const entity1 = new ExampleEntityClass("001", new EntityPosition({ x: 5, y: 5 }), "entity-1");
+const entity2: ExampleEntityObject = { id: "002", position: new EntityPosition({ x: 20, y: 20 }), age: 18 };
 
 const query: SearchQuery = {
-    location: {
-        xFrom: 10, yFrom: 10,
-        xTo: 20, yTo: 20,
+    position: {
+        xFrom: 10, xTo: 20,
+        yFrom: 10, yTo: 20,
     }
 }
+
 
 // "001" entity is not found because it is outside the query location
 search.register([entity1, entity2]);
@@ -40,8 +41,9 @@ console.log(search.search(query));
     }
 */
 
+
 // Moved "001" entity to inside the query location, it will be automatically applied and will be searchable.
-entity1.location.set({ x: 15, y: 15 });
+entity1.position.set({ x: 15, y: 15 });
 console.log(search.search(query));
 /*
     {
@@ -55,4 +57,5 @@ console.log(search.search(query));
         ]
     }
 */
+
 ```
