@@ -52,3 +52,11 @@ console.log(search.search(query));
         ]
     }
 */
+
+
+// Delete registered entities
+search.delete([entity1, entity2]);
+console.log(search.search(query));
+/*
+    { entities: [] }
+*/
