@@ -2,8 +2,9 @@ name: Publish to npm
 
 on:
   workflow_call:
-    NPM_ACCESS_TOKEN:
-      required: true
+    secrets:
+      NPM_ACCESS_TOKEN:
+        required: true
   
   push:
     branches: [ "main" ]
