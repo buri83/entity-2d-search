@@ -23,6 +23,7 @@ jobs:
       - run: npm ci
       - run: npm run build --if-present
       - run: npm test
+      - run: ls ./dist/
 
       # When tag created
       - run: npm publish --access public --dry-run
