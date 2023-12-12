@@ -1,6 +1,6 @@
 {
   "name": "search2d",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "You can search entities in 2D with react angle range queries quickly.",
   "main": "./dist/index.js",
   "scripts": {
