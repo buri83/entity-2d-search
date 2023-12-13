@@ -6,7 +6,8 @@
   "scripts": {
     "test": "npx jest --coverage",
     "build": "npx tsc",
-    "prepare": "npm run build"
+    "prepare": "npm run build",
+    "benchmark": "npx jest src/tests/benchmark.spec.ts"
   },
   "repository": {
     "type": "git",
