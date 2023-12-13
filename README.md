@@ -74,8 +74,8 @@ console.log(search.search(query));
 
 
 // Deregister entities
-search.register(entity1);
-search.register(entity2);
+search.deregister(entity1);
+search.deregister(entity2);
 console.log(search.search(query));
 /*
     { entities: [] }
