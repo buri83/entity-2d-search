@@ -4,7 +4,7 @@
   "description": "You can search entities in 2D with react angle range queries quickly.",
   "main": "./dist/index.js",
   "scripts": {
-    "test": "npx jest",
+    "test": "npx jest --coverage",
     "build": "npx tsc",
     "prepare": "npm run build"
   },
@@ -33,6 +33,14 @@
     ],
     "transform": {
       "^.+\\.(ts|tsx)$": "ts-jest"
+    },
+    "coverageThreshold": {
+      "**": {
+        "functions": 100,
+        "branches": 50,
+        "lines": 75,
+        "statements": 75
+      }
     }
   }
 }

@@ -1,4 +1,4 @@
-import { Subscribable } from "./subscribable";
+import { Subscribable, SubscribableListener } from "./subscribable";
 
 export type EntityId = string;
 
@@ -16,8 +16,12 @@ export class EntityPosition {
     constructor(private position: Position) { }
 
     private subject = new Subscribable<Position>()
-    subscribe(listener: Parameters<typeof this.subject.subscribe>[0]): void {
-        this.subject.subscribe(listener);
+    subscribe(id: string | Symbol, listener: SubscribableListener<Position>): void {
+        this.subject.subscribe(id, listener);
+    }
+
+    unsubscribe(id: string | Symbol): void {
+        this.subject.unsubscribe(id);
     }
 
     get(): Position {
@@ -60,7 +64,7 @@ export type SearchResult<T> = {
     entities: T[]
 }
 
-export interface Entity2dSearch<T> {
+export type Entity2dSearch<T> = {
     /**
      * Initialize internal state and delete registered entities.
      */
@@ -76,13 +80,13 @@ export interface Entity2dSearch<T> {
      * Register entity to internal state.
      * @param entity 
      */
-    register(entities: T[]): void;
+    register(entity: T): void;
 
     /**
-     * Delete entity from internal state.
+     * Deregister entity from internal state.
      * @param entity 
      */
-    delete(entities: T[]): void;
+    deregister(entity: T): void;
 
     /**
      * Get number of registered entities.

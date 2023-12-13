@@ -20,8 +20,8 @@ describe(Subscribable, () => {
             const mockListener1 = jest.fn(() => { });
             const mockListener2 = jest.fn(() => { });
 
-            s.subscribe(mockListener1);
-            s.subscribe(mockListener2);
+            s.subscribe("1", mockListener1);
+            s.subscribe("2", mockListener2);
             s.publish(payload);
 
             expect(mockListener1).toHaveBeenCalledWith(payload);
@@ -31,4 +31,20 @@ describe(Subscribable, () => {
             expect(mockListener2).toHaveBeenCalledTimes(1);
         })
     })
+
+    describe("Subscribe after unsubscribe", () => {
+        it("Listener can not be received any data", () => {
+            const s = new Subscribable<Payload>();
+            const payload: Payload = { id: "test" };
+
+            const mockListener = jest.fn(() => { });
+
+            const id = Symbol();
+            s.subscribe(id, mockListener);
+            s.unsubscribe(id);
+
+            s.publish(payload);
+            expect(mockListener).not.toHaveBeenCalled();
+        })
+    });
 })

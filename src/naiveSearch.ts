@@ -1,6 +1,11 @@
+import { DuplicateRegistrationError } from "./errors";
 import { Entity2dSearch, EntityId, SearchQuery, SearchResult, SearchableEntity } from "./search";
 
 export class NaiveSearch<T extends SearchableEntity> implements Entity2dSearch<T> {
+    constructor() {
+        this.init();
+    }
+
     private entities: Map<EntityId, T> = new Map();
 
     get size(): number {
@@ -26,15 +31,15 @@ export class NaiveSearch<T extends SearchableEntity> implements Entity2dSearch<T
         };
     }
 
-    register(entities: T[]): void {
-        for (const entity of entities) {
-            this.entities.set(entity.id, entity);
+    register(entity: T): void {
+        if (this.entities.has(entity.id)) {
+            throw new DuplicateRegistrationError(`Could not register entity because it id=${entity.id} is already registered.`);
         }
+
+        this.entities.set(entity.id, entity);
     }
 
-    delete(entities: T[]): void {
-        for (const entity of entities) {
-            this.entities.delete(entity.id);
-        }
+    deregister(entity: T): void {
+        this.entities.delete(entity.id);
     }
 }
