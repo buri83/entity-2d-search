@@ -1,4 +1,6 @@
+import { randomUUID } from "crypto";
 import { Entity2dSearch, EntityId, SearchQuery, SearchResult, SearchableEntity } from "./search";
+import { DuplicateRegistrationError } from "./errors";
 
 const DEFAULT_DIVIDE_COUNT = 64;
 
@@ -12,6 +14,8 @@ export type Map1dSearchSettings = {
 };
 
 export class Map1dSearch<T extends SearchableEntity> implements Entity2dSearch<T> {
+    private readonly subscriberId = Symbol();
+
     private entityIndexes: Map<EntityId, number> = new Map();
     private dividedAreas: Map<EntityId, T>[] = [];
 
@@ -42,35 +46,45 @@ export class Map1dSearch<T extends SearchableEntity> implements Entity2dSearch<T
         );
     }
 
-    register(entities: T[]): void {
-        for (const entity of entities) {
-            // initialize
+    register(entity: T): void {
+        if (this.entityIndexes.has(entity.id)) {
+            throw new DuplicateRegistrationError(`Could not register entity because it id=${entity.id} is already registered.`);
+        }
+
+        // initialize
+        this.updateEntity(entity);
+
+        // UpdateEntity on position updated
+        entity.position.subscribe(this.subscriberId, () => {
             this.updateEntity(entity);
-
-            // UpdateEntity on position updated
-            entity.position.subscribe(() => {
-                this.updateEntity(entity);
-            })
-        }
+        })
     }
 
-    delete(entities: T[]): void {
-        for (const entity of entities) {
-            const index = this.entityIndexes.get(entity.id);
-            if (!index) {
-                return;
-            }
-            this.dividedAreas[index].delete(entity.id);
-            this.entityIndexes.delete(entity.id);
+    deregister(entity: T): void {
+        const index = this.entityIndexes.get(entity.id);
+        if (!index) {
+            return;
         }
+        this.dividedAreas[index].delete(entity.id);
+        this.entityIndexes.delete(entity.id);
+        entity.position.unsubscribe(this.subscriberId);
     }
 
+    private updateEntity(entity: T): void {
+        const newIndex = this.toIndexXY(this.toIndexX(entity.position.x), this.toIndexY(entity.position.y));
+        const oldIndex = this.entityIndexes.get(entity.id);
+        if (newIndex === oldIndex) {
+            return;
+        }
+
+        if (oldIndex) {
+            this.dividedAreas[oldIndex].delete(entity.id);
+        }
+        this.entityIndexes.set(entity.id, newIndex);
+        this.dividedAreas[newIndex].set(entity.id, entity);
+    }
 
     search(query: SearchQuery): SearchResult<T> {
-        const result: SearchResult<T> = {
-            entities: []
-        }
-
         const isFulfilled = (entity: T): boolean => {
             return (
                 entity.position.x >= query.position.xFrom &&
@@ -80,15 +94,30 @@ export class Map1dSearch<T extends SearchableEntity> implements Entity2dSearch<T
             );
         };
 
-        const yVisibleIndexFrom = this.toIndexY(query.position.yFrom);
-        const yVisibleIndexTo = this.toIndexY(query.position.yTo);
+        const yIndexFrom = this.toIndexY(query.position.yFrom);
+        const yIndexTo = this.toIndexY(query.position.yTo);
 
-        const xVisibleIndexFrom = this.toIndexX(query.position.xFrom);
-        const xVisibleIndexTo = this.toIndexX(query.position.xTo);
+        const xIndexFrom = this.toIndexX(query.position.xFrom);
+        const xIndexTo = this.toIndexX(query.position.xTo);
+
+
+        const result: SearchResult<T> = {
+            entities: []
+        }
+
+        // 検索範囲が1マスに収まる場合、そのマスだけを単純に検索する
+        if (yIndexFrom === yIndexTo && xIndexFrom === xIndexTo) {
+            for (const entity of this.dividedAreas[this.toIndexXY(xIndexFrom, yIndexFrom)].values()) {
+                if (isFulfilled(entity)) {
+                    result.entities.push(entity);
+                }
+            }
+            return result;
+        }
 
         // 絶対範囲の内側なので isFulfilled() チェックはしない
-        for (let y = yVisibleIndexFrom + 1; y <= yVisibleIndexTo - 1; y++) {
-            for (let x = xVisibleIndexFrom + 1; x <= xVisibleIndexTo - 1; x++) {
+        for (let y = yIndexFrom + 1; y <= yIndexTo - 1; y++) {
+            for (let x = xIndexFrom + 1; x <= xIndexTo - 1; x++) {
                 for (const target of this.dividedAreas[this.toIndexXY(x, y)].values()) {
                     result.entities.push(target)
                 }
@@ -96,31 +125,31 @@ export class Map1dSearch<T extends SearchableEntity> implements Entity2dSearch<T
         }
 
         // 範囲内に存在するかどうかわからないので isFulfilled() チェックが必要
-        for (let x = xVisibleIndexFrom; x <= xVisibleIndexTo; x++) {
+        for (let x = xIndexFrom; x <= xIndexTo; x++) {
             // top 一列
-            for (const target of this.dividedAreas[this.toIndexXY(x, yVisibleIndexFrom)].values()) {
+            for (const target of this.dividedAreas[this.toIndexXY(x, yIndexFrom)].values()) {
                 if (isFulfilled(target)) {
                     result.entities.push(target)
                 }
             }
 
             // bottom 一列
-            for (const target of this.dividedAreas[this.toIndexXY(x, yVisibleIndexTo)].values()) {
+            for (const target of this.dividedAreas[this.toIndexXY(x, yIndexTo)].values()) {
                 if (isFulfilled(target)) {
                     result.entities.push(target)
                 }
             }
         }
-        for (let y = yVisibleIndexFrom + 1; y <= yVisibleIndexTo - 1; y++) {
+        for (let y = yIndexFrom + 1; y <= yIndexTo - 1; y++) {
             // left 一列
-            for (const target of this.dividedAreas[this.toIndexXY(xVisibleIndexFrom, y)].values()) {
+            for (const target of this.dividedAreas[this.toIndexXY(xIndexFrom, y)].values()) {
                 if (isFulfilled(target)) {
                     result.entities.push(target)
                 }
             }
 
             // right 一列
-            for (const target of this.dividedAreas[this.toIndexXY(xVisibleIndexTo, y)].values()) {
+            for (const target of this.dividedAreas[this.toIndexXY(xIndexTo, y)].values()) {
                 if (isFulfilled(target)) {
                     result.entities.push(target)
                 }
@@ -129,17 +158,6 @@ export class Map1dSearch<T extends SearchableEntity> implements Entity2dSearch<T
 
         return result;
     }
-
-    private updateEntity(entity: T): void {
-        const newIndex = this.toIndexXY(this.toIndexX(entity.position.x), this.toIndexY(entity.position.y));
-        const oldIndex = this.entityIndexes.get(entity.id);
-        if (oldIndex) {
-            this.dividedAreas[oldIndex].delete(entity.id);
-        }
-        this.entityIndexes.set(entity.id, newIndex);
-        this.dividedAreas[newIndex].set(entity.id, entity);
-    }
-
 
     private toIndexXY(xIndex: number, yIndex: number): number {
         return yIndex * this.divideCountWidth + xIndex;
