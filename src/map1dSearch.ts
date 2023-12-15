@@ -1,5 +1,4 @@
-import { randomUUID } from "crypto";
-import { Entity2dSearch, EntityId, SearchQuery, SearchResult, SearchableEntity } from "./search";
+import { EntitySearch2D, EntityId, SearchQuery, SearchResult, SearchableEntity, EntityPosition } from "./search";
 import { DuplicateRegistrationError } from "./errors";
 
 const DEFAULT_DIVIDE_COUNT = 64;
@@ -13,7 +12,7 @@ export type Map1dSearchSettings = {
     }>;
 };
 
-export class Map1dSearch<T extends SearchableEntity> implements Entity2dSearch<T> {
+export class Map1dSearch<T extends SearchableEntity> implements EntitySearch2D<T> {
     private readonly subscriberId = Symbol();
 
     private entityIndexes: Map<EntityId, number> = new Map();
@@ -26,24 +25,17 @@ export class Map1dSearch<T extends SearchableEntity> implements Entity2dSearch<T
     private areaWidth: number;
 
     constructor(private readonly settings: Map1dSearchSettings) {
-        this.divideCountHeight = (settings.divideCount?.height ?? DEFAULT_DIVIDE_COUNT)
-        this.divideCountWidth = (settings.divideCount?.width ?? DEFAULT_DIVIDE_COUNT)
+        this.divideCountHeight = settings.divideCount?.height ?? DEFAULT_DIVIDE_COUNT;
+        this.divideCountWidth = settings.divideCount?.width ?? DEFAULT_DIVIDE_COUNT;
 
         this.areaHeight = settings.height / this.divideCountHeight;
         this.areaWidth = settings.width / this.divideCountWidth;
 
-        this.init();
+        this.dividedAreas = [...Array(this.divideCountWidth * this.divideCountHeight)].map(() => new Map<EntityId, T>());
     }
 
     get size(): number {
         return this.entityIndexes.size;
-    }
-
-    init(): void {
-        this.entityIndexes = new Map();
-        this.dividedAreas = [...Array(this.divideCountWidth * this.divideCountHeight)].map(
-            () => new Map<EntityId, T>()
-        );
     }
 
     register(entity: T): void {
@@ -55,9 +47,9 @@ export class Map1dSearch<T extends SearchableEntity> implements Entity2dSearch<T
         this.updateEntity(entity);
 
         // UpdateEntity on position updated
-        entity.position.subscribe(this.subscriberId, () => {
+        EntityPosition.subscribe(entity.position, this.subscriberId, () => {
             this.updateEntity(entity);
-        })
+        });
     }
 
     deregister(entity: T): void {
@@ -67,7 +59,15 @@ export class Map1dSearch<T extends SearchableEntity> implements Entity2dSearch<T
         }
         this.dividedAreas[index].delete(entity.id);
         this.entityIndexes.delete(entity.id);
-        entity.position.unsubscribe(this.subscriberId);
+        EntityPosition.unsubscribe(entity.position, this.subscriberId);
+    }
+
+    deregisterAll(): void {
+        for (const dividedArea of this.dividedAreas) {
+            for (const entity of dividedArea.values()) {
+                this.deregister(entity);
+            }
+        }
     }
 
     private updateEntity(entity: T): void {
@@ -100,10 +100,9 @@ export class Map1dSearch<T extends SearchableEntity> implements Entity2dSearch<T
         const xIndexFrom = this.toIndexX(query.position.xFrom);
         const xIndexTo = this.toIndexX(query.position.xTo);
 
-
         const result: SearchResult<T> = {
-            entities: []
-        }
+            entities: [],
+        };
 
         // 検索範囲が1マスに収まる場合、そのマスだけを単純に検索する
         if (yIndexFrom === yIndexTo && xIndexFrom === xIndexTo) {
@@ -119,7 +118,7 @@ export class Map1dSearch<T extends SearchableEntity> implements Entity2dSearch<T
         for (let y = yIndexFrom + 1; y <= yIndexTo - 1; y++) {
             for (let x = xIndexFrom + 1; x <= xIndexTo - 1; x++) {
                 for (const target of this.dividedAreas[this.toIndexXY(x, y)].values()) {
-                    result.entities.push(target)
+                    result.entities.push(target);
                 }
             }
         }
@@ -129,14 +128,14 @@ export class Map1dSearch<T extends SearchableEntity> implements Entity2dSearch<T
             // top 一列
             for (const target of this.dividedAreas[this.toIndexXY(x, yIndexFrom)].values()) {
                 if (isFulfilled(target)) {
-                    result.entities.push(target)
+                    result.entities.push(target);
                 }
             }
 
             // bottom 一列
             for (const target of this.dividedAreas[this.toIndexXY(x, yIndexTo)].values()) {
                 if (isFulfilled(target)) {
-                    result.entities.push(target)
+                    result.entities.push(target);
                 }
             }
         }
@@ -144,14 +143,14 @@ export class Map1dSearch<T extends SearchableEntity> implements Entity2dSearch<T
             // left 一列
             for (const target of this.dividedAreas[this.toIndexXY(xIndexFrom, y)].values()) {
                 if (isFulfilled(target)) {
-                    result.entities.push(target)
+                    result.entities.push(target);
                 }
             }
 
             // right 一列
             for (const target of this.dividedAreas[this.toIndexXY(xIndexTo, y)].values()) {
                 if (isFulfilled(target)) {
-                    result.entities.push(target)
+                    result.entities.push(target);
                 }
             }
         }

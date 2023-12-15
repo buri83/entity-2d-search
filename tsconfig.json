@@ -92,9 +92,10 @@
     },
     "exclude": [
         "src/tests/**",
-        "src/examples/**",
+        "examples/**",
         "src/**/*.spec.ts",
         "src/**/*.test.ts",
-        "dist/**/*"
+        "dist/**/*",
+        "doc/**"
     ]
 }

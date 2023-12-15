@@ -3,3 +3,5 @@ src/
 .github/
 tsconfig.json
 coverage/
+doc/
+.prettierrc

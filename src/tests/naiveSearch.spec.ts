@@ -1,4 +1,4 @@
 import { NaiveSearch } from "../naiveSearch";
-import { SearchTest } from "./search-tests";
+import { SearchTest } from "./searchTests";
 
 SearchTest(NaiveSearch.name, () => new NaiveSearch());
