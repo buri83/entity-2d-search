@@ -1,1 +1,1 @@
-export class DuplicateRegistrationError extends Error { }; 
+export class DuplicateRegistrationError extends Error {}

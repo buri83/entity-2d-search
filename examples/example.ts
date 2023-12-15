@@ -1,15 +1,15 @@
-import { EntityPosition, EntitySearch2D, SearchQuery, SearchableEntity } from "..";
+import { EntityPosition, EntitySearch2D, SearchQuery, SearchableEntity } from "../src"; // if you installed with npm, import "search2d" instead
 
 class ExampleEntityClass implements SearchableEntity {
     constructor(
-        readonly id: string,  // Required
-        readonly position: EntityPosition,  // Required
-        readonly name: string,  // Additional field
-    ) { }
+        readonly id: string, // Required
+        readonly position: EntityPosition, // Required
+        readonly name: string, // Additional field
+    ) {}
 }
 
 type ExampleEntityObject = {
-    age: number;  // Additional field
+    age: number; // Additional field
 } & SearchableEntity;
 
 const search = new EntitySearch2D<ExampleEntityClass | ExampleEntityObject>({ height: 100, width: 100 });
@@ -19,10 +19,12 @@ const entity2: ExampleEntityObject = { id: "002", position: new EntityPosition({
 
 const query: SearchQuery = {
     position: {
-        xFrom: 10, xTo: 20,
-        yFrom: 10, yTo: 20,
-    }
-}
+        xFrom: 10,
+        xTo: 20,
+        yFrom: 10,
+        yTo: 20,
+    },
+};
 
 // "001" entity is not found because it is outside the query position
 search.register(entity1);
@@ -36,14 +38,13 @@ console.log(search.search(query));
     }
 */
 
-
 // Moved "001" entity to inside the query location, it will be automatically applied and will be searchable.
 entity1.position.set({ x: 15, y: 15 });
 
 // You can also get the same result with the method below
 // If you want to change x and y at the same time, it is faster to use set().
-entity1.position.x = 15
-entity1.position.y = 15
+entity1.position.x = 15;
+entity1.position.y = 15;
 
 console.log(search.search(query));
 /*
@@ -59,10 +60,14 @@ console.log(search.search(query));
     }
 */
 
-
 // Deregister entities
 search.deregister(entity1);
 search.deregister(entity2);
+
+// You can deregister all entities
+// Please call before disposing it instance to prevent memory leak.
+search.deregisterAll();
+
 console.log(search.search(query));
 /*
     { entities: [] }

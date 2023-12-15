@@ -7,8 +7,8 @@ export class TestEntity implements SearchableEntity {
     constructor(
         readonly id: string,
         readonly name: string,
-        readonly position: EntityPosition
-    ) { }
+        readonly position: EntityPosition,
+    ) {}
 }
 
 export function randomString(): string {
@@ -21,6 +21,7 @@ export function generateRandomEntity(x?: number, y?: number): TestEntity {
         randomString(),
         new EntityPosition({
             x: x ?? Math.round(Math.random() * WORLD_WIDTH),
-            y: y ?? Math.round(Math.random() * WORLD_HEIGHT)
-        }));
+            y: y ?? Math.round(Math.random() * WORLD_HEIGHT),
+        }),
+    );
 }

@@ -5,17 +5,17 @@ export type EntityId = string;
 export type Position = {
     x: number;
     y: number;
-}
+};
 
 export type SearchableEntity = {
     id: Readonly<EntityId>;
-    position: EntityPosition
-}
+    position: EntityPosition;
+};
 
 export class EntityPosition {
-    constructor(private position: Position) { }
+    constructor(private position: Position) {}
 
-    private subject = new Subscribable<Position>()
+    private subject = new Subscribable<Position>();
     static subscribe(entityPosition: EntityPosition, id: string | Symbol, subscriber: Subscriber<Position>): void {
         entityPosition.subject.subscribe(id, subscriber);
     }
@@ -25,7 +25,7 @@ export class EntityPosition {
     }
 
     get(): Position {
-        return { ... this.position };
+        return { ...this.position };
     }
 
     set(position: Position): void {
@@ -50,19 +50,18 @@ export class EntityPosition {
     }
 }
 
-
 export type SearchQuery = {
     position: {
         xFrom: number;
         xTo: number;
         yFrom: number;
         yTo: number;
-    }
-}
+    };
+};
 
 export type SearchResult<T> = {
-    entities: T[]
-}
+    entities: T[];
+};
 
 export type EntitySearch2D<T> = {
     /**
@@ -72,25 +71,25 @@ export type EntitySearch2D<T> = {
 
     /**
      * Register entity to internal state.
-     * @param entity 
+     * @param entity
      */
     register(entity: T): void;
 
     /**
      * Deregister entity from internal state.
-     * @param entity 
+     * @param entity
      */
     deregister(entity: T): void;
 
     /**
      * Deregister all entities from internal state.
-     * Please call before dispose it instance to prevent memory leak.
+     * Please call before disposing it instance to prevent memory leak.
      */
     deregisterAll(): void;
 
     /**
      * Search registered entity with react angle range.
-     * @param query 
+     * @param query
      */
     search(query: SearchQuery): SearchResult<T>;
-}
+};
