@@ -10,7 +10,7 @@ $ npm i search2d
 ## Usage
 
 ```typescript
-import { EntityPosition, EntitySearch, SearchQuery, SearchableEntity } from "search2d";
+import { EntityPosition, EntitySearch2D, SearchQuery, SearchableEntity } from "search2d"
 
 class ExampleEntityClass implements SearchableEntity {
     constructor(
@@ -24,7 +24,7 @@ type ExampleEntityObject = {
     age: number;  // Additional field
 } & SearchableEntity;
 
-const search = new EntitySearch<ExampleEntityClass | ExampleEntityObject>({ height: 100, width: 100 });
+const search = new EntitySearch2D<ExampleEntityClass | ExampleEntityObject>({ height: 100, width: 100 });
 
 const entity1 = new ExampleEntityClass("001", new EntityPosition({ x: 5, y: 5 }), "entity-1");
 const entity2: ExampleEntityObject = { id: "002", position: new EntityPosition({ x: 20, y: 20 }), age: 18 };

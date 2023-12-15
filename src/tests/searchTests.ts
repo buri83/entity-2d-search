@@ -1,8 +1,8 @@
 import { DuplicateRegistrationError } from "../errors";
-import { Entity2dSearch, SearchQuery } from "../search";
+import { EntitySearch2D, SearchQuery } from "../search";
 import { TestEntity, generateRandomEntity } from "./testUtils";
 
-export function SearchTest(description: string, generateSearch: () => Entity2dSearch<TestEntity>): void {
+export function SearchTest(description: string, generateSearch: () => EntitySearch2D<TestEntity>): void {
     describe(description, () => {
         describe("Entity registration and deletion", () => {
             it("Search instance created, size=0", () => {
@@ -34,12 +34,12 @@ export function SearchTest(description: string, generateSearch: () => Entity2dSe
                 })
             })
 
-            describe("Register entity then init() called", () => {
+            describe("Register entity then deregisterAll() called", () => {
                 it("size = 0", () => {
                     const search = generateSearch();
                     const entity = generateRandomEntity();
                     search.register(entity);
-                    search.init();
+                    search.deregisterAll();
 
                     expect(search.size).toBe(0);
                 })
@@ -130,5 +130,4 @@ export function SearchTest(description: string, generateSearch: () => Entity2dSe
 
         })
     })
-
 }

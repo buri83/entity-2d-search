@@ -1,4 +1,4 @@
-import { Subscribable, SubscribableListener } from "./subscribable";
+import { Subscribable, Subscriber } from "./subscribable";
 
 export type EntityId = string;
 
@@ -16,12 +16,12 @@ export class EntityPosition {
     constructor(private position: Position) { }
 
     private subject = new Subscribable<Position>()
-    subscribe(id: string | Symbol, listener: SubscribableListener<Position>): void {
-        this.subject.subscribe(id, listener);
+    static subscribe(entityPosition: EntityPosition, id: string | Symbol, subscriber: Subscriber<Position>): void {
+        entityPosition.subject.subscribe(id, subscriber);
     }
 
-    unsubscribe(id: string | Symbol): void {
-        this.subject.unsubscribe(id);
+    static unsubscribe(entityPosition: EntityPosition, id: string | Symbol): void {
+        entityPosition.subject.unsubscribe(id);
     }
 
     get(): Position {
@@ -64,17 +64,11 @@ export type SearchResult<T> = {
     entities: T[]
 }
 
-export type Entity2dSearch<T> = {
+export type EntitySearch2D<T> = {
     /**
-     * Initialize internal state and delete registered entities.
+     * Get number of registered entities.
      */
-    init(): void;
-
-    /**
-     * Search registered entity with react angle range.
-     * @param query 
-     */
-    search(query: SearchQuery): SearchResult<T>;
+    size: Readonly<number>;
 
     /**
      * Register entity to internal state.
@@ -89,7 +83,14 @@ export type Entity2dSearch<T> = {
     deregister(entity: T): void;
 
     /**
-     * Get number of registered entities.
+     * Deregister all entities from internal state.
+     * Please call before dispose it instance to prevent memory leak.
      */
-    size: Readonly<number>;
+    deregisterAll(): void;
+
+    /**
+     * Search registered entity with react angle range.
+     * @param query 
+     */
+    search(query: SearchQuery): SearchResult<T>;
 }

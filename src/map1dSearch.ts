@@ -1,5 +1,4 @@
-import { randomUUID } from "crypto";
-import { Entity2dSearch, EntityId, SearchQuery, SearchResult, SearchableEntity } from "./search";
+import { EntitySearch2D, EntityId, SearchQuery, SearchResult, SearchableEntity, EntityPosition } from "./search";
 import { DuplicateRegistrationError } from "./errors";
 
 const DEFAULT_DIVIDE_COUNT = 64;
@@ -13,7 +12,7 @@ export type Map1dSearchSettings = {
     }>;
 };
 
-export class Map1dSearch<T extends SearchableEntity> implements Entity2dSearch<T> {
+export class Map1dSearch<T extends SearchableEntity> implements EntitySearch2D<T> {
     private readonly subscriberId = Symbol();
 
     private entityIndexes: Map<EntityId, number> = new Map();
@@ -32,18 +31,13 @@ export class Map1dSearch<T extends SearchableEntity> implements Entity2dSearch<T
         this.areaHeight = settings.height / this.divideCountHeight;
         this.areaWidth = settings.width / this.divideCountWidth;
 
-        this.init();
+        this.dividedAreas = [...Array(this.divideCountWidth * this.divideCountHeight)].map(
+            () => new Map<EntityId, T>()
+        );
     }
 
     get size(): number {
         return this.entityIndexes.size;
-    }
-
-    init(): void {
-        this.entityIndexes = new Map();
-        this.dividedAreas = [...Array(this.divideCountWidth * this.divideCountHeight)].map(
-            () => new Map<EntityId, T>()
-        );
     }
 
     register(entity: T): void {
@@ -55,9 +49,9 @@ export class Map1dSearch<T extends SearchableEntity> implements Entity2dSearch<T
         this.updateEntity(entity);
 
         // UpdateEntity on position updated
-        entity.position.subscribe(this.subscriberId, () => {
+        EntityPosition.subscribe(entity.position, this.subscriberId, () => {
             this.updateEntity(entity);
-        })
+        });
     }
 
     deregister(entity: T): void {
@@ -67,7 +61,15 @@ export class Map1dSearch<T extends SearchableEntity> implements Entity2dSearch<T
         }
         this.dividedAreas[index].delete(entity.id);
         this.entityIndexes.delete(entity.id);
-        entity.position.unsubscribe(this.subscriberId);
+        EntityPosition.unsubscribe(entity.position, this.subscriberId);
+    }
+
+    deregisterAll(): void {
+        for (const dividedArea of this.dividedAreas) {
+            for (const entity of dividedArea.values()) {
+                this.deregister(entity);
+            }
+        }
     }
 
     private updateEntity(entity: T): void {
