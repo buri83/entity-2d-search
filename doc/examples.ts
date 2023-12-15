@@ -13,16 +13,15 @@ class ExampleEntityClass implements SearchableEntity {
     ) {}
 }
 
+// Specify field height and width
+// Entity's position range: 0 <= y <= height,  0 <= x <= width
+const search = new Search2D<ExampleEntityObject>({ height: 100, width: 100 });
+
 const entity: ExampleEntityObject = {
     id: "001", // id must be unique
     position: new EntityPosition({ x: 10, y: 20 }),
     name: "buri",
 };
-
-// Specify field height and width
-// Entity's position range: 0 <= y <= height,  0 <= x <= width
-const search = new Search2D<ExampleEntityObject>({ height: 100, width: 100 });
-
 // Register entity to search
 search.register(entity);
 

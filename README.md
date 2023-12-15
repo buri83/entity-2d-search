@@ -1,6 +1,6 @@
 # Search 2D
 
-![search2d-concept](https://github.com/buri83/search2d/blob/main/doc/search2d-concept.webp)
+![search2d-concept](https://github.com/buri83/search2d/blob/main/doc/search2d-concept.jpg)
 
 **This package is under development.**
 
@@ -30,16 +30,15 @@ class ExampleEntityClass implements SearchableEntity {
     ) {}
 }
 
+// Specify field height and width
+// Entity's position range: 0 <= y <= height,  0 <= x <= width
+const search = new Search2D<ExampleEntityObject>({ height: 100, width: 100 });
+
 const entity: ExampleEntityObject = {
     id: "001", // id must be unique
     position: new EntityPosition({ x: 10, y: 20 }),
     name: "buri",
 };
-
-// Specify field height and width
-// Entity's position range: 0 <= y <= height,  0 <= x <= width
-const search = new Search2D<ExampleEntityObject>({ height: 100, width: 100 });
-
 // Register entity to search
 search.register(entity);
 
@@ -69,4 +68,31 @@ search.deregister(entity);
 
 // Deregister all entities before disposing search2D instance to prevent memory leak.
 search.deregisterAll();
+```
+
+# Benchmark
+
+Search2D is about 10x faster than NaiveSearch. (10k entities)  
+benchmark code is [here](https://github.com/buri83/search2d/blob/main/src/tests/benchmark.spec.ts)
+
+|                | NaiveSearch | Search2D |
+|----------------|-------------|----------|
+| Registration   | 3ms         | 17ms     |
+| Deregistration | 3ms         | 9ms      |
+| Search         | 1706ms      | 174ms    | 
+
+
+```typescript
+// NaiveSearch (https://github.com/buri83/search2d/blob/main/src/naiveSearch.ts)
+const entities: T[] = [];
+for (const entity of this.entities.values()) {
+    const isContained =
+        query.position.xFrom <= entity.position.x &&
+        entity.position.x <= query.position.xTo &&
+        query.position.yFrom <= entity.position.y &&
+        entity.position.y <= query.position.yTo;
+    if (isContained) {
+        entities.push(entity);
+    }
+}
 ```
