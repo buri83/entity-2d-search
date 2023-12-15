@@ -95,6 +95,7 @@
         "examples/**",
         "src/**/*.spec.ts",
         "src/**/*.test.ts",
-        "dist/**/*"
+        "dist/**/*",
+        "doc/**"
     ]
 }
