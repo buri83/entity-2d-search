@@ -63,7 +63,7 @@ export type SearchResult<T> = {
     entities: T[];
 };
 
-export type EntitySearch2D<T> = {
+export type Search2D<T> = {
     /**
      * Get number of registered entities.
      */

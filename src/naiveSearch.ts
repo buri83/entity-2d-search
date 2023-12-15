@@ -1,7 +1,7 @@
 import { DuplicateRegistrationError } from "./errors";
-import { EntitySearch2D, EntityId, SearchQuery, SearchResult, SearchableEntity } from "./search";
+import { Search2D, EntityId, SearchQuery, SearchResult, SearchableEntity } from "./search";
 
-export class NaiveSearch<T extends SearchableEntity> implements EntitySearch2D<T> {
+export class NaiveSearch<T extends SearchableEntity> implements Search2D<T> {
     private entities: Map<EntityId, T> = new Map();
 
     get size(): number {
