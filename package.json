@@ -1,8 +1,8 @@
 {
   "name": "search2d",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "main": "./dist/index.js",
-  "description": "You can search entities in 2D with react angle range queries quickly.",
+  "description": "Quickly search for entities in the 2D world with a rectangular range query.",
   "keywords": [
     "game",
     "2d",
