@@ -15,7 +15,7 @@ npm i search2d
 ## Example
 
 ```typescript
-import { EntityPosition, EntitySearch2D, SearchQuery, SearchableEntity } from "search2d"
+import { EntityPosition, Search2D, SearchableEntity } from "search2d";
 
 type ExampleEntityObject = {
     name: string; // Additional field
@@ -38,7 +38,7 @@ const entity: ExampleEntityObject = {
 
 // Specify field height and width
 // Entity's position range: 0 <= y <= height,  0 <= x <= width
-const search = new EntitySearch2D<ExampleEntityObject>({ height: 100, width: 100 });
+const search = new Search2D<ExampleEntityObject>({ height: 100, width: 100 });
 
 // Register entity to search
 search.register(entity);

@@ -1,4 +1,4 @@
-import { EntitySearch2D, EntityId, SearchQuery, SearchResult, SearchableEntity, EntityPosition } from "./search";
+import { Search2D, EntityId, SearchQuery, SearchResult, SearchableEntity, EntityPosition } from "./search";
 import { DuplicateRegistrationError } from "./errors";
 
 const DEFAULT_DIVIDE_COUNT = 64;
@@ -12,7 +12,7 @@ export type Map1dSearchSettings = {
     }>;
 };
 
-export class Map1dSearch<T extends SearchableEntity> implements EntitySearch2D<T> {
+export class Map1dSearch<T extends SearchableEntity> implements Search2D<T> {
     private readonly subscriberId = Symbol();
 
     private entityIndexes: Map<EntityId, number> = new Map();

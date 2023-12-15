@@ -1,8 +1,8 @@
 import { DuplicateRegistrationError } from "../errors";
-import { EntitySearch2D, SearchQuery } from "../search";
+import { Search2D, SearchQuery } from "../search";
 import { TestEntity, generateRandomEntity } from "./testUtils";
 
-export function SearchTest(description: string, generateSearch: () => EntitySearch2D<TestEntity>): void {
+export function SearchTest(description: string, generateSearch: () => Search2D<TestEntity>): void {
     describe(description, () => {
         describe("Entity registration and deletion", () => {
             it("Search instance created, size=0", () => {

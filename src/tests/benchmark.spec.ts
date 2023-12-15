@@ -1,9 +1,9 @@
 import { Map1dSearch } from "../map1dSearch";
 import { NaiveSearch } from "../naiveSearch";
-import { EntitySearch2D } from "../search";
+import { Search2D } from "../search";
 import { TestEntity, WORLD_HEIGHT, WORLD_WIDTH, generateRandomEntity } from "./testUtils";
 
-type GenerateSearch = () => EntitySearch2D<TestEntity>;
+type GenerateSearch = () => Search2D<TestEntity>;
 type BenchmarkResult = {
     name: string;
     registerTimeMs: number;
