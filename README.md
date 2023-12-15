@@ -2,9 +2,9 @@
 
 ![search2d-concept](https://github.com/buri83/search2d/blob/main/doc/search2d-concept.webp)
 
-Quickly search for entities in the 2D world with a rectangular range query.
-
 **This package is under development.**
+
+Quickly search for entities in the 2D world with a rectangular range query.
 
 ## Install
 
