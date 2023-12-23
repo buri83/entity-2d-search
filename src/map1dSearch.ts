@@ -1,6 +1,6 @@
 import { Search2D, EntityId, SearchQuery, SearchResult, SearchableEntity, EntityPosition } from "./search";
 
-const DEFAULT_DIVIDE_COUNT = 64;
+const DEFAULT_DIVIDE_COUNT = 32;
 
 export type Map1dSearchSettings = {
     height: number;
