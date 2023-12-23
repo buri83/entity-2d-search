@@ -1,4 +1,3 @@
-import { DuplicateRegistrationError } from "../errors";
 import { Search2D, SearchQuery } from "../search";
 import { TestEntity, generateRandomEntity } from "./testUtils";
 
@@ -26,11 +25,11 @@ export function SearchTest(description: string, generateSearch: () => Search2D<T
             });
 
             describe("Register some entity 2 times", () => {
-                it(`Should throw ${DuplicateRegistrationError.name} error`, () => {
+                it(`Should not throw any error`, () => {
                     const search = generateSearch();
                     const entity = generateRandomEntity();
                     search.register(entity);
-                    expect(() => search.register(entity)).toThrow(DuplicateRegistrationError);
+                    expect(() => search.register(entity)).not.toThrow();
                 });
             });
 

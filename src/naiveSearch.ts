@@ -1,4 +1,3 @@
-import { DuplicateRegistrationError } from "./errors";
 import { Search2D, EntityId, SearchQuery, SearchResult, SearchableEntity } from "./search";
 
 export class NaiveSearch<T extends SearchableEntity> implements Search2D<T> {
@@ -28,7 +27,7 @@ export class NaiveSearch<T extends SearchableEntity> implements Search2D<T> {
 
     register(entity: T): void {
         if (this.entities.has(entity.id)) {
-            throw new DuplicateRegistrationError(`Could not register entity because it id=${entity.id} is already registered.`);
+            return;
         }
 
         this.entities.set(entity.id, entity);
