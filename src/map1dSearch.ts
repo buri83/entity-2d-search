@@ -1,5 +1,4 @@
 import { Search2D, EntityId, SearchQuery, SearchResult, SearchableEntity, EntityPosition } from "./search";
-import { DuplicateRegistrationError } from "./errors";
 
 const DEFAULT_DIVIDE_COUNT = 64;
 
@@ -40,7 +39,7 @@ export class Map1dSearch<T extends SearchableEntity> implements Search2D<T> {
 
     register(entity: T): void {
         if (this.entityIndexes.has(entity.id)) {
-            throw new DuplicateRegistrationError(`Could not register entity because it id=${entity.id} is already registered.`);
+            return;
         }
 
         // initialize
