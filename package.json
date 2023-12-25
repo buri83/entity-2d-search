@@ -1,6 +1,6 @@
 {
   "name": "search2d",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "main": "./dist/index.js",
   "description": "Quickly search for entities in the 2D world with a rectangular range query.",
   "keywords": [
