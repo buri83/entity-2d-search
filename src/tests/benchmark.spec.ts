@@ -1,5 +1,6 @@
 import { Map1dSearch } from "../map1dSearch";
 import { NaiveSearch } from "../naiveSearch";
+import { RBushSearch } from "./rbushSearch";
 import { Search2D } from "../search";
 import { TestEntity, WORLD_HEIGHT, WORLD_WIDTH, generateRandomEntity } from "./testUtils";
 
@@ -60,7 +61,33 @@ function executeBenchmark(name: string, generateSearch: GenerateSearch): Benchma
 const searches: [string, GenerateSearch][] = [
     [NaiveSearch.name, () => new NaiveSearch()],
     [Map1dSearch.name, () => new Map1dSearch({ height: WORLD_HEIGHT, width: WORLD_WIDTH })],
+    [RBushSearch.name, () => new RBushSearch()],
 ];
+
+function test(): void {
+    const results: { [Key in string]: string[] } = {};
+    for (const [description, generateSearch] of searches) {
+        const search = generateSearch();
+
+        for (const e of testEntities) {
+            search.register(e);
+        }
+
+        const result = search.search({
+            position: {
+                xFrom: 20,
+                yFrom: 20,
+                xTo: 50,
+                yTo: 50,
+            },
+        });
+        results[description] = result.entities.map((e) => e.id);
+        results[description].sort();
+    }
+
+    console.log(results);
+}
+test();
 
 describe("Benchmark", () => {
     const results = searches.map(([name, generateSearch]) => {
