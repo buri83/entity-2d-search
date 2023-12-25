@@ -71,6 +71,10 @@ export class Map1dSearch<T extends SearchableEntity> implements Search2D<T> {
 
     private updateEntity(entity: T): void {
         const newIndex = this.toIndexXY(this.toIndexX(entity.position.x), this.toIndexY(entity.position.y));
+        if (Number.isNaN(newIndex)) {
+            throw `Entity(id=${entity.id}) position(x=${entity.position?.x}, y=${entity.position?.y}) is invalid. They should be number.`;
+        }
+
         const oldIndex = this.entityIndexes.get(entity.id);
         if (newIndex === oldIndex) {
             return;
