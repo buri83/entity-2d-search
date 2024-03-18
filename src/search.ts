@@ -13,7 +13,9 @@ export type SearchableEntity = {
 };
 
 export class EntityPosition {
-    constructor(private position: Position) {}
+    constructor(private position: Position) {
+        this.validatePosition();
+    }
 
     private subject = new Subscribable<Position>();
     static subscribe(entityPosition: EntityPosition, id: string | Symbol, subscriber: Subscriber<Position>): void {
@@ -30,6 +32,7 @@ export class EntityPosition {
 
     set(position: Position): void {
         this.position = { ...position };
+        this.validatePosition();
         this.subject.publish(this.get());
     }
 
@@ -38,6 +41,7 @@ export class EntityPosition {
     }
     set x(value: number) {
         this.position.x = value;
+        this.validatePosition();
         this.subject.publish(this.get());
     }
 
@@ -46,7 +50,17 @@ export class EntityPosition {
     }
     set y(value: number) {
         this.position.y = value;
+        this.validatePosition();
         this.subject.publish(this.get());
+    }
+
+    private validatePosition(): void {
+        if (typeof this.position.x !== "number" || Number.isNaN(this.position.x)) {
+            throw `position.x(${this.position.x}) is invalid`;
+        }
+        if (typeof this.position.y !== "number" || Number.isNaN(this.position.y)) {
+            throw `position.y(${this.position.y}) is invalid`;
+        }
     }
 }
 
