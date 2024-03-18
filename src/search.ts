@@ -59,7 +59,7 @@ export class EntityPosition {
             throw `position.x(${this.position.x}) is invalid`;
         }
         if (typeof this.position.y !== "number" || Number.isNaN(this.position.y)) {
-            throw `position.x(${this.position.y}) is invalid`;
+            throw `position.y(${this.position.y}) is invalid`;
         }
     }
 }
